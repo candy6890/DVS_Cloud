@@ -19,8 +19,10 @@ namespace DVS
         string reHostName = null, reLocalName = null, xStr = null;
         string DS = "211.75.132.163";
         string localDS = System.Net.Dns.GetHostEntry("LocalHost").HostName.ToString();
-        string reHostNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(4, 2);
-        string reLocalNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(7, 2);
+        // string reHostNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(4, 2);
+        string reHostNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(6, 2);
+        //string reLocalNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(7, 2);
+        string reLocalNameNum = System.Net.Dns.GetHostEntry("LocalHost").HostName.Substring(9, 2);
         bool xUpdateKey = false;
         public Form2()
         {
@@ -41,7 +43,7 @@ namespace DVS
         void showDesk()
         {
             deskPannel.Location = new System.Drawing.Point(0, 22);
-            deskPannel.Size = new System.Drawing.Size(472, 246);
+            deskPannel.Size = new System.Drawing.Size(472, 338);
         }
 
         void showLocalName(string xKey)
@@ -1563,13 +1565,18 @@ namespace DVS
                     if (runResult01 == DialogResult.Yes)
                     {
                         //按了是
-                        copyDataPanel.Location = new System.Drawing.Point(0, 22);
-                        copyDataPanel.Size = new System.Drawing.Size(474, 270);
-                        copyDataPanel.Visible = true;
-                        copyDataLabel.Text = "正在傳輸資料請稍等.......";
-                        xActionStu();
-                        timer2.Interval = 5 * 1000;
-                        timer2.Start();
+                        //copyDataPanel.Location = new System.Drawing.Point(0, 22);
+                        //copyDataPanel.Size = new System.Drawing.Size(474, 270);
+                        //copyDataPanel.Visible = true;
+                        //copyDataLabel.Text = "正在傳輸資料請稍等.......";
+                        //xActionStu();
+                        //timer2.Interval = 5 * 1000;
+                        //timer2.Start();
+                        secPL.Visible = true;
+                        secPL.Location = new System.Drawing.Point(0, 22);
+                        secPL.Size = new System.Drawing.Size(472, 248);
+                        //this.Size = new System.Drawing.Size(273, 248);
+                        showCBa();
                     }
                     else if (runResult01 == DialogResult.No)
                     {
@@ -1633,6 +1640,31 @@ namespace DVS
             }
         }
 
+        void showCBa()
+        {
+            string connetionString = null, sql = null;
+            SqlConnection conn; SqlCommand cmd; SqlDataReader rd;
+            comboBox4.Items.Clear();
+            comboBox4.Items.Add("請選擇");
+            connetionString = "Data Source=" + localDS + ";Initial Catalog=sourceData;User ID=sa;Password=";
+            conn = new SqlConnection(connetionString);
+            conn.Open();
+            sql = "SELECT DISTINCT xYear AS E1 FROM Local_Stu_Data ";
+            sql += "WHERE (xYear >= '" + System.DateTime.Now.AddYears(-7).ToString() + "')  order by E1 desc ";
+             
+            cmd = new SqlCommand(sql, conn);
+            rd = cmd.ExecuteReader();
+            while (rd.Read())
+            {
+                comboBox4.Items.Add(rd["E1"].ToString());
+            }
+            rd.Close();
+            cmd.Dispose();
+            conn.Close();
+            comboBox4.SelectedIndex = 0;
+        
+        }
+
         private void autoSaveBt_Click(object sender, EventArgs e)
         {
 
@@ -1646,6 +1678,48 @@ namespace DVS
                 copyDataPanel.Visible = false;
                 manualSetPannel.Visible = false;
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            Button bt = (Button)sender;
+            switch (bt.Text)
+            {
+                case "查詢":
+                    if (comboBox4.SelectedIndex.ToString() != "0")
+                    {
+                        xselectStu(comboBox4.SelectedItem.ToString());
+                        bt.Text = "匯入";
+                    }
+                    break;
+                case "匯入":
+                    if (comboBox4.SelectedIndex.ToString() != "0")
+                    {
+                        //deleteDVD_Logistics(comboBox4.SelectedItem.ToString());
+                        //selectDVD_Logistics(comboBox4.SelectedItem.ToString());
+                        bt.Text = "查詢";
+                    }
+                    break;
+            }
+        }
+        void xselectStu(string xxYear)
+        {
+            SqlConnection conn; SqlCommand cmd; SqlDataReader rd;
+            connetionString = "Data Source=" + DS + ";Initial Catalog=STMS;User ID=sa;Password=";
+            conn = new SqlConnection(connetionString);
+            conn.Open();
+            sql = "SELECT COUNT(*) AS E1 FROM Student ";
+            sql += "WHERE Year = '" + xxYear + "' ";
+            cmd = new SqlCommand(sql, conn);
+            rd = cmd.ExecuteReader();
+            if (rd.Read())
+            {
+                label19.Text = rd["E1"].ToString();
+            }
+            rd.Close();
+            rd.Close();
+            cmd.Dispose();
+            conn.Close();
         }
     }
 }
