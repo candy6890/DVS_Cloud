@@ -1,0 +1,6 @@
+2016/2/3
+eveDVS V2.1 (Form2)
+xActionStu() --> 開放"匯入及刪除學生資料"
+xActionParticipation() --> 開放"重新匯入及刪除班級設定"
+xActionLogistics() --> 開放"重新刪除與匯入教室日誌"
+匯入資料後出現"正在傳輸資料…"的字樣後5秒，即會回到自動傳輸畫面。
